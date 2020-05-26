@@ -7,26 +7,30 @@ import 'package:flutter/material.dart';
 
 Future<void> navigateToHome(BuildContext context) {
 //  return Navigator.of(context).pushReplacementNamed(routeHome);
-  return Navigator.of(context).push(PageRouteBuilder(
-    pageBuilder: (context, animation, secondaryAnimation) {
-      return HomePage(recipeeRepository: RecipeeRepository());
-    },
-    transitionDuration: Duration(milliseconds: 200),
-    transitionsBuilder: (context, animation, secondaryAnimation, child) {
-      return Stack(
-        children: <Widget>[
-          child,
-          SlideTransition(
-            position: Tween<Offset>(
-              begin: Offset.zero,
-              end: Offset(-1, 0),
-            ).animate(animation),
-            child: IntroPage(),
-          ),
-        ],
-      );
-  }
-  ));
+  return Navigator.of(context).pushReplacement(PageRouteBuilder(
+      pageBuilder: (context, animation, secondaryAnimation) {
+        return HomePage(recipeeRepository: RecipeeRepository());
+      },
+      transitionDuration: Duration(milliseconds: 200),
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        return Stack(
+          children: <Widget>[
+            child,
+            SlideTransition(
+              position: Tween<Offset>(
+                begin: Offset.zero,
+                end: Offset(-1, 0),
+              ).animate(animation),
+              child: IntroPage(),
+            ),
+          ],
+        );
+      }));
+}
+
+Future<void> navigateToLogin(BuildContext context) {
+  FocusScope.of(context).requestFocus(FocusNode());
+  return Navigator.of(context).pushNamed(routeLogin);
 }
 
 Future<void> navigateToDetail(BuildContext context, Recipe recipe) {
