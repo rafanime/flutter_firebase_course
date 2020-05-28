@@ -65,8 +65,8 @@ class RecipeeRepository {
   }
 
   // Get recommendations
-  List<Recipe> getRecommendations() {
-    return [];
-    //return recipees.getRange(0, 3).toList();
+  Future<List<Recipe>> getRecommendations() async {
+    List<Recipe> recipes = await getSpecialRecipees();
+    return recipes.getRange(0, 2).toList();
   }
 }

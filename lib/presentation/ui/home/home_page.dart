@@ -113,15 +113,23 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
           ),
-          Recommendations(
-            children: widget.recipeeRepository
-                .getRecommendations()
-                .map((recipe) => RecipeImage(
-                      recipe: recipe,
+          FutureBuilder<List<Recipe>>(
+            initialData: [],
+            future: widget.recipeeRepository.getRecommendations(),
+            builder: (context, snapshot) {
+              return Recommendations(
+                children: List.generate(
+                  snapshot.data.length,
+                  (index) {
+                    return RecipeImage(
+                      recipe: snapshot.data[index],
                       onClicked: (recipe, context) =>
                           navigateToDetail(context, recipe),
-                    ))
-                .toList(),
+                    );
+                  },
+                ),
+              );
+            },
           ),
           Align(
             alignment: Alignment.bottomCenter,
