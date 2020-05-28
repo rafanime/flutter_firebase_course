@@ -1,6 +1,6 @@
 import 'dart:async';
-
 import 'package:complex_ui/data/local/models/recipee.dart';
+import 'package:complex_ui/data/local/repositories/recipee_repository.dart';
 import 'package:complex_ui/presentation/assets/dimensions.dart';
 import 'package:complex_ui/presentation/widgets/header_widget.dart';
 import 'package:complex_ui/presentation/widgets/platform_aware_button.dart';
@@ -16,15 +16,14 @@ class RecipeDetailPage extends StatefulWidget {
   _RecipeDetailPageState createState() => _RecipeDetailPageState();
 }
 
-class _RecipeDetailPageState extends State<RecipeDetailPage> with SingleTickerProviderStateMixin {
+class _RecipeDetailPageState extends State<RecipeDetailPage>
+    with SingleTickerProviderStateMixin {
   AnimationController _animationController;
 
   @override
   void initState() {
-    _animationController = AnimationController(
-        vsync: this,
-        duration: Duration(milliseconds: 125)
-    );
+    _animationController =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 125));
     Timer(Duration(milliseconds: 200), () => _animationController.forward());
     super.initState();
   }
@@ -42,7 +41,7 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> with SingleTickerPr
       appBar: AppBar(
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
-          onPressed: (){
+          onPressed: () {
             _animationController.reverse().then((value) {
               Navigator.of(context).pop();
             });
@@ -66,11 +65,10 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> with SingleTickerPr
           children: <Widget>[
             Padding(
               padding: const EdgeInsets.only(
-                left: marginScreen,
-                right: marginScreen,
-                top: marginRecipeTop,
-                bottom: marginRecipeBottom
-              ),
+                  left: marginScreen,
+                  right: marginScreen,
+                  top: marginRecipeTop,
+                  bottom: marginRecipeBottom),
               child: RecipeNameWidget(
                 recipe: widget.recipe,
                 animationController: _animationController,
@@ -99,11 +97,9 @@ class _RecipeDetailPageState extends State<RecipeDetailPage> with SingleTickerPr
 }
 
 class RecipeNameWidget extends StatelessWidget {
-  const RecipeNameWidget({
-    Key key,
-    @required this.recipe,
-    @required this.animationController
-  }) : super(key: key);
+  const RecipeNameWidget(
+      {Key key, @required this.recipe, @required this.animationController})
+      : super(key: key);
 
   final Recipe recipe;
   final AnimationController animationController;
@@ -158,7 +154,6 @@ class BottomDetailWidget extends StatelessWidget {
   final Recipe recipe;
   final AnimationController animationController;
 
-
   @override
   Widget build(BuildContext context) {
     return SlideTransition(
@@ -169,68 +164,77 @@ class BottomDetailWidget extends StatelessWidget {
       child: FadeTransition(
         opacity: animationController,
         child: Container(
-          padding: EdgeInsets.all(marginScreen),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.only(
-              topRight: Radius.circular(radius),
-              topLeft: Radius.circular(radius),
+            padding: EdgeInsets.all(marginScreen),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                topRight: Radius.circular(radius),
+                topLeft: Radius.circular(radius),
+              ),
             ),
-          ),
-          child: SafeArea(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: <Widget>[
-                Row(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    DetailWidget(
-                      text: "${recipe.pieces} pieces",
-                      icon: Icons.adjust,
-                    ),
-                    DetailWidget(
-                      text: "${recipe.calories} cal",
-                      icon: Icons.add_box,
-                    ),
-                    DetailWidget(
-                      text: "${recipe.minDuration.inMinutes} min",
-                      icon: Icons.access_time,
-                    ),
-                  ],
-                ),
-                const SizedBox(
-                  height: marginItems,
-                ),
-                IntrinsicHeight(
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
+            child: SafeArea(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: <Widget>[
+                  Row(
+                    mainAxisSize: MainAxisSize.max,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      Expanded(
-                        flex: 4,
-                        child: PlatformAwareButton(
-                          text: "Start cooking",
-                          onPressed: () => print("Yay!"),
-                        ),
+                      DetailWidget(
+                        text: "${recipe.pieces} pieces",
+                        icon: Icons.adjust,
                       ),
-                      const SizedBox(
-                        width: marginMedium,
+                      DetailWidget(
+                        text: "${recipe.calories} cal",
+                        icon: Icons.add_box,
                       ),
-                      Favorite(),
+                      DetailWidget(
+                        text: "${recipe.minDuration.inMinutes} min",
+                        icon: Icons.access_time,
+                      ),
                     ],
                   ),
-                )
-              ],
-            ),
-          )
-        ),
+                  const SizedBox(
+                    height: marginItems,
+                  ),
+                  IntrinsicHeight(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: <Widget>[
+                        Expanded(
+                          flex: 4,
+                          child: PlatformAwareButton(
+                            text: "Start cooking",
+                            onPressed: () => print("Yay!"),
+                          ),
+                        ),
+                        const SizedBox(
+                          width: marginMedium,
+                        ),
+                        Favorite(
+                          recipe: recipe,
+                        ),
+                      ],
+                    ),
+                  )
+                ],
+              ),
+            )),
       ),
     );
   }
 }
 
 class Favorite extends StatefulWidget {
+  final Recipe recipe;
+  final Key key;
+
+  Favorite({
+    this.key,
+    @required this.recipe,
+  });
+
   @override
   _FavoriteState createState() => _FavoriteState();
 }
@@ -240,14 +244,15 @@ class _FavoriteState extends State<Favorite> with TickerProviderStateMixin {
   AnimationController _sizeAnimationController;
   Animation _heartAnimation;
   Animation _backgroundAnimation;
-  bool _favorite = false;
+  bool _favorite;
+  RecipeeRepository _recipeeRepository;
 
   @override
   void initState() {
-    _colorAnimationController = AnimationController(
-      vsync: this,
-      duration: Duration(milliseconds: 125)
-    );
+    _recipeeRepository = RecipeeRepository();
+    _favorite = widget.recipe.isFavorite;
+    _colorAnimationController =
+        AnimationController(vsync: this, duration: Duration(milliseconds: 125));
 
     _sizeAnimationController = AnimationController(
       vsync: this,
@@ -260,16 +265,18 @@ class _FavoriteState extends State<Favorite> with TickerProviderStateMixin {
     _heartAnimation = ColorTween(
       begin: Colors.black,
       end: Colors.red,
-    ).animate(_colorAnimationController)..addListener(() {
-      setState(() {});
-    });
+    ).animate(_colorAnimationController)
+      ..addListener(() {
+        setState(() {});
+      });
 
     _backgroundAnimation = ColorTween(
       begin: Colors.white,
       end: Colors.black,
-    ).animate(_colorAnimationController)..addListener(() {
-      setState(() {});
-    });
+    ).animate(_colorAnimationController)
+      ..addListener(() {
+        setState(() {});
+      });
     super.initState();
   }
 
@@ -279,32 +286,34 @@ class _FavoriteState extends State<Favorite> with TickerProviderStateMixin {
     super.dispose();
   }
 
-
   @override
   Widget build(BuildContext context) {
     return AspectRatio(
       aspectRatio: 1.0,
       child: GestureDetector(
-        onTap: (){
+        onTap: () {
           _sizeAnimationController.forward().then((value) {
             _favorite
                 ? _colorAnimationController.forward()
                 : _colorAnimationController.reverse();
           }).then((value) => _sizeAnimationController..reverse());
-          _favorite = !_favorite;
+          setState(() {
+            _favorite = !_favorite;
+          });
+          _recipeeRepository.likeRecipe(widget.recipe, _favorite);
         },
         child: Container(
           decoration: BoxDecoration(
-            color: _backgroundAnimation.value,
-            borderRadius: BorderRadius.all(
-              Radius.circular(12.0),
-            ),
-            border: Border.all()
-          ),
+              color: _favorite ? Colors.black : Colors.white,
+              borderRadius: BorderRadius.all(
+                Radius.circular(12.0),
+              ),
+              border: Border.all()),
           child: ScaleTransition(
             scale: _sizeAnimationController,
-            child: Icon(Icons.favorite,
-              color: _heartAnimation.value,
+            child: Icon(
+              Icons.favorite,
+              color: _favorite ? Colors.red : Colors.black,
             ),
           ),
         ),
@@ -312,7 +321,6 @@ class _FavoriteState extends State<Favorite> with TickerProviderStateMixin {
     );
   }
 }
-
 
 class StarsWidget extends StatelessWidget {
   final int stars;

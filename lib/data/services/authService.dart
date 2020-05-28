@@ -23,7 +23,14 @@ class AuthService {
   }
 
   User _userFromFirebase(FirebaseUser user) {
-    return user != null ? User(uid: user.uid) : null;
+    return user != null
+        ? User(
+            uid: user.uid,
+            email: user.email,
+            name: user.displayName,
+            avatar: user.photoUrl,
+          )
+        : null;
   }
 
   Stream<User> get authUser {

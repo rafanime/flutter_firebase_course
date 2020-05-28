@@ -1,4 +1,5 @@
 class Recipe {
+  String id;
   String name;
   int pieces;
   int calories;
@@ -9,6 +10,16 @@ class Recipe {
   int startCount;
   int reviewCount;
 
-  Recipe(this.name, this.pieces, this.calories, this.minDuration, 
-      this.maxDuration, this.assetName, this.startCount, this.reviewCount, {this.isFavorite = false});
+  Recipe({
+    this.id,
+    this.name,
+    this.pieces,
+    this.calories,
+    this.minDuration,
+    this.maxDuration,
+    this.assetName,
+    this.startCount,
+    this.reviewCount,
+    this.isFavorite = false,
+  });
 }
