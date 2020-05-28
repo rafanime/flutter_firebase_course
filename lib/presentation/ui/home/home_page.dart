@@ -1,11 +1,14 @@
+import 'package:complex_ui/data/local/models/user.dart';
 import 'package:complex_ui/data/local/repositories/recipee_repository.dart';
 import 'package:complex_ui/data/services/authService.dart';
 import 'package:complex_ui/presentation/assets/dimensions.dart';
 import 'package:complex_ui/presentation/navigation/navigation.dart';
 import 'package:complex_ui/presentation/widgets/header_widget.dart';
+import 'package:complex_ui/presentation/widgets/platform_aware_button.dart';
 import 'package:complex_ui/presentation/widgets/recipe_image.dart';
 import 'package:complex_ui/presentation/widgets/user_icon.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class HomePage extends StatefulWidget {
   final RecipeeRepository recipeeRepository;
@@ -28,14 +31,14 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         elevation: 0.0,
         actions: <Widget>[
-          UserIcon(),
-          FlatButton.icon(
-            icon: Icon(Icons.person),
-            label: Text('Log out'),
-            onPressed: () async {
-              await authService.signOut();
-              navigateToLogin(context);
-            },
+          Padding(
+            padding: const EdgeInsets.only(
+              top: 8.0,
+              right: 10,
+            ),
+            child: ClipOval(
+              child: Image.network(Provider.of<User>(context)?.avatar ?? ""),
+            ),
           ),
         ],
       ),
@@ -46,11 +49,27 @@ class _HomePageState extends State<HomePage> {
             padding: const EdgeInsets.only(
               left: marginScreen,
               right: marginScreen,
-              top: marginText,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
+                Text(
+                  Provider.of<User>(context)?.name ?? "",
+                  style: Theme.of(context)
+                      .textTheme
+                      .headline2
+                      .copyWith(color: Colors.black),
+                ),
+                Text(
+                  Provider.of<User>(context)?.email ?? "",
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyText1
+                      .copyWith(color: Colors.black),
+                ),
+                const SizedBox(
+                  height: marginText,
+                ),
                 HeaderWidget(
                   title: "Good ",
                   subtitle: "${_getGreeting()}!",
@@ -84,14 +103,30 @@ class _HomePageState extends State<HomePage> {
             ),
           ),
           Recommendations(
-              children: widget.recipeeRepository
-                  .getRecommendations()
-                  .map((recipe) => RecipeImage(
-                        recipe: recipe,
-                        onClicked: (recipe, context) =>
-                            navigateToDetail(context, recipe),
-                      ))
-                  .toList())
+            children: widget.recipeeRepository
+                .getRecommendations()
+                .map((recipe) => RecipeImage(
+                      recipe: recipe,
+                      onClicked: (recipe, context) =>
+                          navigateToDetail(context, recipe),
+                    ))
+                .toList(),
+          ),
+          Container(
+            width: double.infinity,
+            child: Padding(
+              padding: EdgeInsets.all(marginScreen),
+              child: SafeArea(
+                child: PlatformAwareButton(
+                  text: "Log Out",
+                  onPressed: () async {
+                    await authService.signOut();
+                    navigateToLogin(context);
+                  },
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );

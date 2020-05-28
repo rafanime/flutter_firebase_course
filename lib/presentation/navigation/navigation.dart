@@ -7,7 +7,8 @@ import 'package:flutter/material.dart';
 
 Future<void> navigateToHome(BuildContext context) {
 //  return Navigator.of(context).pushReplacementNamed(routeHome);
-  return Navigator.of(context).pushReplacement(PageRouteBuilder(
+  return Navigator.of(context).pushReplacement(
+    PageRouteBuilder(
       pageBuilder: (context, animation, secondaryAnimation) {
         return HomePage(recipeeRepository: RecipeeRepository());
       },
@@ -25,7 +26,14 @@ Future<void> navigateToHome(BuildContext context) {
             ),
           ],
         );
-      }));
+      },
+    ),
+  );
+}
+
+Future<void> navigateToIntro(BuildContext context) {
+  FocusScope.of(context).requestFocus(FocusNode());
+  return Navigator.of(context).pushNamed(routeIntro);
 }
 
 Future<void> navigateToLogin(BuildContext context) {
