@@ -22,7 +22,7 @@ const authRoute = "auth";
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return StreamProvider.value(
+    return StreamProvider<User>.value(
       value: AuthService().authUser,
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
