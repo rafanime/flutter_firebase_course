@@ -2,6 +2,7 @@ import 'package:complex_ui/data/local/repositories/recipee_repository.dart';
 import 'package:complex_ui/presentation/assets/dimensions.dart';
 import 'package:complex_ui/presentation/navigation/navigation.dart';
 import 'package:complex_ui/presentation/widgets/header_widget.dart';
+import 'package:complex_ui/presentation/widgets/platform_aware_button.dart';
 import 'package:complex_ui/presentation/widgets/recipe_image.dart';
 import 'package:complex_ui/presentation/widgets/user_icon.dart';
 import 'package:flutter/material.dart';
@@ -35,11 +36,27 @@ class _HomePageState extends State<HomePage> {
             padding: const EdgeInsets.only(
               left: marginScreen,
               right: marginScreen,
-              top: marginText,
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
+                Text(
+                  "User Name",
+                  style: Theme.of(context)
+                      .textTheme
+                      .headline2
+                      .copyWith(color: Colors.black),
+                ),
+                Text(
+                  "User email",
+                  style: Theme.of(context)
+                      .textTheme
+                      .bodyText1
+                      .copyWith(color: Colors.black),
+                ),
+                const SizedBox(
+                  height: marginText,
+                ),
                 HeaderWidget(
                   title: "Good ",
                   subtitle: "${_getGreeting()}!",
@@ -56,17 +73,15 @@ class _HomePageState extends State<HomePage> {
                   children: widget.recipeeRepository
                       .getSpecialRecipees()
                       .map((recipe) {
-                        return Hero(
-                          tag: recipe,
-                          child: RecipeImage(
-                            recipe: recipe,
-                            onClicked: (recipe, context) =>
-                                navigateToDetail(context, recipe),
-                          ),
-                        );
-                      }
-                      )
-                      .toList(),
+                    return Hero(
+                      tag: recipe,
+                      child: RecipeImage(
+                        recipe: recipe,
+                        onClicked: (recipe, context) =>
+                            navigateToDetail(context, recipe),
+                      ),
+                    );
+                  }).toList(),
                 ),
                 const SizedBox(
                   height: marginItems,
@@ -78,11 +93,29 @@ class _HomePageState extends State<HomePage> {
             children: widget.recipeeRepository
                 .getRecommendations()
                 .map((recipe) => RecipeImage(
-                  recipe: recipe,
-                  onClicked: (recipe, context) =>
-                      navigateToDetail(context, recipe),
-                ))
-                .toList())
+                      recipe: recipe,
+                      onClicked: (recipe, context) =>
+                          navigateToDetail(context, recipe),
+                    ))
+                .toList(),
+          ),
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Container(
+              width: double.infinity,
+              child: Padding(
+                padding: EdgeInsets.all(marginScreen),
+                child: SafeArea(
+                  child: PlatformAwareButton(
+                    text: "Log out",
+                    onPressed: () {
+                      navigateToLogin(context);
+                    },
+                  ),
+                ),
+              ),
+            ),
+          )
         ],
       ),
     );
@@ -113,28 +146,26 @@ class _ChipSearchBarState extends State<ChipSearchBar> {
   @override
   Widget build(BuildContext context) {
     return Wrap(
-      spacing: 8.0,
-      children: (<Widget>[
-        TextFormField(
-          textInputAction: TextInputAction.done,
-          controller: _textController,
-          focusNode: _focusNode,
-          decoration: InputDecoration(suffixIcon: Icon(Icons.search)),
-          onFieldSubmitted: (value) {
-            _selectedWidgets.add(CookChip(
-              key: Key(value),
-              text: value,
-              onDeleted: () => setState(() {
-                removeChipWithValue(value);
-              })
-            ));
-            _textController.clear();
-            setState(() {});
-            _focusNode.requestFocus();
-          }),
-        ..._selectedWidgets,
-      ])
-    );
+        spacing: 8.0,
+        children: (<Widget>[
+          TextFormField(
+              textInputAction: TextInputAction.done,
+              controller: _textController,
+              focusNode: _focusNode,
+              decoration: InputDecoration(suffixIcon: Icon(Icons.search)),
+              onFieldSubmitted: (value) {
+                _selectedWidgets.add(CookChip(
+                    key: Key(value),
+                    text: value,
+                    onDeleted: () => setState(() {
+                          removeChipWithValue(value);
+                        })));
+                _textController.clear();
+                setState(() {});
+                _focusNode.requestFocus();
+              }),
+          ..._selectedWidgets,
+        ]));
   }
 
   void removeChipWithValue(String value) {
@@ -152,17 +183,14 @@ class CookChip extends StatefulWidget {
   final VoidCallback onDeleted;
   final Key key;
 
-  CookChip({
-    this.text,
-    this.onDeleted,
-    this.key
-  }) : super(key: key);
+  CookChip({this.text, this.onDeleted, this.key}) : super(key: key);
 
   @override
   _CookChipState createState() => _CookChipState();
 }
 
-class _CookChipState extends State<CookChip> with SingleTickerProviderStateMixin {
+class _CookChipState extends State<CookChip>
+    with SingleTickerProviderStateMixin {
   AnimationController _animationController;
 
   @override
@@ -200,7 +228,7 @@ class _CookChipState extends State<CookChip> with SingleTickerProviderStateMixin
     );
   }
 
-  void onDeleted(){
+  void onDeleted() {
     _animationController.reverse().then((value) => widget.onDeleted());
   }
 }
@@ -313,8 +341,8 @@ class Recommendations extends StatelessWidget {
             textAlign: TextAlign.start,
             text: TextSpan(
               style: Theme.of(context).textTheme.headline2.copyWith(
-                fontWeight: FontWeight.w300,
-              ),
+                    fontWeight: FontWeight.w300,
+                  ),
               children: <TextSpan>[
                 TextSpan(text: "Your special\n"),
                 TextSpan(
@@ -326,22 +354,21 @@ class Recommendations extends StatelessWidget {
           ),
         ),
         SizedBox(
-          height: itemSize,
-          child: ListView(
-            scrollDirection: Axis.horizontal,
-            children: [
-              SizedBox(width: marginScreen),
-              ...children
-                  .map(
-                    (recipe) => Container(
-                      child: recipe,
-                      margin: EdgeInsets.only(right: marginSmall),
-                    ),
-                  )
-                  .toList()
-            ],
-          )
-        )
+            height: itemSize,
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              children: [
+                SizedBox(width: marginScreen),
+                ...children
+                    .map(
+                      (recipe) => Container(
+                        child: recipe,
+                        margin: EdgeInsets.only(right: marginSmall),
+                      ),
+                    )
+                    .toList()
+              ],
+            ))
       ],
     );
   }
