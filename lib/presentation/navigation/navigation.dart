@@ -28,6 +28,11 @@ Future<void> navigateToHome(BuildContext context) {
       }));
 }
 
+Future<void> navigateToIntro(BuildContext context) {
+  FocusScope.of(context).requestFocus(FocusNode());
+  return Navigator.of(context).pushNamed(routeIntro);
+}
+
 Future<void> navigateToLogin(BuildContext context) {
   FocusScope.of(context).requestFocus(FocusNode());
   return Navigator.of(context).pushNamed(routeLogin);

@@ -20,7 +20,7 @@ class LoginPage extends StatelessWidget {
                 text: 'Log in',
                 onPressed: () async {
                   if (await AuthService().signInWithGoogle() != null) {
-                    navigateToHome(context);
+                    navigateToIntro(context);
                   }
                 })
           ],
